@@ -1,0 +1,9 @@
+BasedOnStyle: Google
+IndentWidth: 2
+AlignArrayOfStructures: Left
+AlignConsecutiveAssignments: AcrossComments
+AlignConsecutiveBitFields: AcrossComments
+AlignConsecutiveMacros: AcrossComments
+AlignOperands: AlignAfterOperator
+AlignTrailingComments: true
+IndentPPDirectives: BeforeHash
