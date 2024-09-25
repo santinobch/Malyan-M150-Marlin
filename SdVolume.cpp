@@ -20,16 +20,16 @@
 #include "Marlin.h"
 #ifdef SDSUPPORT
 
-#include "SdVolume.h"
-//------------------------------------------------------------------------------
-#if !USE_MULTIPLE_CARDS
+  #include "SdVolume.h"
+  //------------------------------------------------------------------------------
+  #if !USE_MULTIPLE_CARDS
 // raw block cache
 uint32_t SdVolume::cacheBlockNumber_;  // current block number
-cache_t  SdVolume::cacheBuffer_;       // 512 byte cache for Sd2Card
+cache_t SdVolume::cacheBuffer_;        // 512 byte cache for Sd2Card
 Sd2Card* SdVolume::sdCard_;            // pointer to SD card object
-bool     SdVolume::cacheDirty_;        // cacheFlush() will write block if true
+bool SdVolume::cacheDirty_;            // cacheFlush() will write block if true
 uint32_t SdVolume::cacheMirrorBlock_;  // mirror  block for second FAT
-#endif  // USE_MULTIPLE_CARDS
+  #endif                               // USE_MULTIPLE_CARDS
 //------------------------------------------------------------------------------
 // find a contiguous group of clusters
 bool SdVolume::allocContiguous(uint32_t count, uint32_t* curCluster) {
@@ -100,7 +100,7 @@ bool SdVolume::allocContiguous(uint32_t count, uint32_t* curCluster) {
 
   return true;
 
- fail:
+fail:
   return false;
 }
 //------------------------------------------------------------------------------
@@ -120,7 +120,7 @@ bool SdVolume::cacheFlush() {
   }
   return true;
 
- fail:
+fail:
   return false;
 }
 //------------------------------------------------------------------------------
@@ -133,7 +133,7 @@ bool SdVolume::cacheRawBlock(uint32_t blockNumber, bool dirty) {
   if (dirty) cacheDirty_ = true;
   return true;
 
- fail:
+fail:
   return false;
 }
 //------------------------------------------------------------------------------
@@ -147,7 +147,7 @@ bool SdVolume::chainSize(uint32_t cluster, uint32_t* size) {
   *size = s;
   return true;
 
- fail:
+fail:
   return false;
 }
 //------------------------------------------------------------------------------
@@ -188,7 +188,7 @@ bool SdVolume::fatGet(uint32_t cluster, uint32_t* value) {
   }
   return true;
 
- fail:
+fail:
   return false;
 }
 //------------------------------------------------------------------------------
@@ -247,7 +247,7 @@ bool SdVolume::fatPut(uint32_t cluster, uint32_t value) {
   if (fatCount_ > 1) cacheMirrorBlock_ = lba + blocksPerFat_;
   return true;
 
- fail:
+fail:
   return false;
 }
 //------------------------------------------------------------------------------
@@ -269,7 +269,7 @@ bool SdVolume::freeChain(uint32_t cluster) {
 
   return true;
 
- fail:
+fail:
   return false;
 }
 //------------------------------------------------------------------------------
@@ -326,22 +326,20 @@ bool SdVolume::init(Sd2Card* dev, uint8_t part) {
   uint32_t volumeStartBlock = 0;
   fat32_boot_t* fbs;
 
-  sdCard_ = dev;
-  fatType_ = 0;
+  sdCard_           = dev;
+  fatType_          = 0;
   allocSearchStart_ = 2;
-  cacheDirty_ = 0;  // cacheFlush() will write block if true
+  cacheDirty_       = 0;  // cacheFlush() will write block if true
   cacheMirrorBlock_ = 0;
   cacheBlockNumber_ = 0XFFFFFFFF;
 
   // if part == 0 assume super floppy with FAT boot sector in block zero
   // if part > 0 assume mbr volume with partition table
   if (part) {
-    if (part > 4)goto fail;
+    if (part > 4) goto fail;
     if (!cacheRawBlock(volumeStartBlock, CACHE_FOR_READ)) goto fail;
-    part_t* p = &cacheBuffer_.mbr.part[part-1];
-    if ((p->boot & 0X7F) !=0  ||
-      p->totalSectors < 100 ||
-      p->firstSector == 0) {
+    part_t* p = &cacheBuffer_.mbr.part[part - 1];
+    if ((p->boot & 0X7F) != 0 || p->totalSectors < 100 || p->firstSector == 0) {
       // not a valid partition
       goto fail;
     }
@@ -349,14 +347,12 @@ bool SdVolume::init(Sd2Card* dev, uint8_t part) {
   }
   if (!cacheRawBlock(volumeStartBlock, CACHE_FOR_READ)) goto fail;
   fbs = &cacheBuffer_.fbs32;
-  if (fbs->bytesPerSector != 512 ||
-    fbs->fatCount == 0 ||
-    fbs->reservedSectorCount == 0 ||
-    fbs->sectorsPerCluster == 0) {
-       // not valid FAT volume
-      goto fail;
+  if (fbs->bytesPerSector != 512 || fbs->fatCount == 0 ||
+      fbs->reservedSectorCount == 0 || fbs->sectorsPerCluster == 0) {
+    // not valid FAT volume
+    goto fail;
   }
-  fatCount_ = fbs->fatCount;
+  fatCount_         = fbs->fatCount;
   blocksPerCluster_ = fbs->sectorsPerCluster;
   // determine shift that is same as multiply by blocksPerCluster_
   clusterSizeShift_ = 0;
@@ -364,8 +360,8 @@ bool SdVolume::init(Sd2Card* dev, uint8_t part) {
     // error if not power of 2
     if (clusterSizeShift_++ > 7) goto fail;
   }
-  blocksPerFat_ = fbs->sectorsPerFat16 ?
-                    fbs->sectorsPerFat16 : fbs->sectorsPerFat32;
+  blocksPerFat_ =
+      fbs->sectorsPerFat16 ? fbs->sectorsPerFat16 : fbs->sectorsPerFat32;
 
   fatStartBlock_ = volumeStartBlock + fbs->reservedSectorCount;
 
@@ -376,11 +372,10 @@ bool SdVolume::init(Sd2Card* dev, uint8_t part) {
   rootDirStart_ = fatStartBlock_ + fbs->fatCount * blocksPerFat_;
 
   // data start for FAT16 and FAT32
-  dataStartBlock_ = rootDirStart_ + ((32 * fbs->rootDirEntryCount + 511)/512);
+  dataStartBlock_ = rootDirStart_ + ((32 * fbs->rootDirEntryCount + 511) / 512);
 
   // total blocks for FAT16 or FAT32
-  totalBlocks = fbs->totalSectors16 ?
-                           fbs->totalSectors16 : fbs->totalSectors32;
+  totalBlocks = fbs->totalSectors16 ? fbs->totalSectors16 : fbs->totalSectors32;
   // total data blocks
   clusterCount_ = totalBlocks - (dataStartBlock_ - volumeStartBlock);
 
@@ -395,11 +390,11 @@ bool SdVolume::init(Sd2Card* dev, uint8_t part) {
     fatType_ = 16;
   } else {
     rootDirStart_ = fbs->fat32RootCluster;
-    fatType_ = 32;
+    fatType_      = 32;
   }
   return true;
 
- fail:
+fail:
   return false;
 }
 #endif

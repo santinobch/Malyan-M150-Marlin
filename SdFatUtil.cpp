@@ -20,19 +20,19 @@
 #include "Marlin.h"
 
 #ifdef SDSUPPORT
-#include "SdFatUtil.h"
+  #include "SdFatUtil.h"
 
-//------------------------------------------------------------------------------
-/** Amount of free RAM
- * \return The number of free bytes.
- */
-#ifdef __arm__
+  //------------------------------------------------------------------------------
+  /** Amount of free RAM
+   * \return The number of free bytes.
+   */
+  #ifdef __arm__
 extern "C" char* sbrk(int incr);
 int SdFatUtil::FreeRam() {
   char top;
   return &top - reinterpret_cast<char*>(sbrk(0));
 }
-#else  // __arm__
+  #else   // __arm__
 extern char *__brkval;
 extern char __bss_end;
 /** Amount of free RAM
@@ -42,7 +42,7 @@ int SdFatUtil::FreeRam() {
   char top;
   return __brkval ? &top - __brkval : &top - &__bss_end;
 }
-#endif  // __arm
+  #endif  // __arm
 
 //------------------------------------------------------------------------------
 /** %Print a string in flash memory.
@@ -50,7 +50,7 @@ int SdFatUtil::FreeRam() {
  * \param[in] pr Print object for output.
  * \param[in] str Pointer to string stored in flash memory.
  */
-void SdFatUtil::print_P( PGM_P str) {
+void SdFatUtil::print_P(PGM_P str) {
   for (uint8_t c; (c = pgm_read_byte(str)); str++) MYSERIAL.write(c);
 }
 //------------------------------------------------------------------------------
@@ -59,8 +59,8 @@ void SdFatUtil::print_P( PGM_P str) {
  * \param[in] pr Print object for output.
  * \param[in] str Pointer to string stored in flash memory.
  */
-void SdFatUtil::println_P( PGM_P str) {
-  print_P( str);
+void SdFatUtil::println_P(PGM_P str) {
+  print_P(str);
   MYSERIAL.println();
 }
 //------------------------------------------------------------------------------
@@ -68,15 +68,11 @@ void SdFatUtil::println_P( PGM_P str) {
  *
  * \param[in] str Pointer to string stored in flash memory.
  */
-void SdFatUtil::SerialPrint_P(PGM_P str) {
-  print_P(str);
-}
+void SdFatUtil::SerialPrint_P(PGM_P str) { print_P(str); }
 //------------------------------------------------------------------------------
 /** %Print a string in flash memory to Serial followed by a CR/LF.
  *
  * \param[in] str Pointer to string stored in flash memory.
  */
-void SdFatUtil::SerialPrintln_P(PGM_P str) {
-  println_P( str);
-}
+void SdFatUtil::SerialPrintln_P(PGM_P str) { println_P(str); }
 #endif

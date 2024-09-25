@@ -20,7 +20,7 @@
 #include "Marlin.h"
 
 #ifdef SDSUPPORT
-#include "SdFile.h"
+  #include "SdFile.h"
 /**  Create a file object and open it in the current working directory.
  *
  * \param[in] path A path with a valid 8.3 DOS name for a file to be opened.
@@ -28,8 +28,7 @@
  * \param[in] oflag Values for \a oflag are constructed by a bitwise-inclusive
  * OR of open flags. see SdBaseFile::open(SdBaseFile*, const char*, uint8_t).
  */
-SdFile::SdFile(const char* path, uint8_t oflag) : SdBaseFile(path, oflag) {
-}
+SdFile::SdFile(const char* path, uint8_t oflag) : SdBaseFile(path, oflag) {}
 //------------------------------------------------------------------------------
 /** Write data to an open file.
  *
@@ -49,30 +48,22 @@ SdFile::SdFile(const char* path, uint8_t oflag) : SdBaseFile(path, oflag) {
 int16_t SdFile::write(const void* buf, uint16_t nbyte) {
   return SdBaseFile::write(buf, nbyte);
 }
-//------------------------------------------------------------------------------
-/** Write a byte to a file. Required by the Arduino Print class.
- * \param[in] b the byte to be written.
- * Use writeError to check for errors.
- */
-#if ARDUINO >= 100
-size_t SdFile::write(uint8_t b)
-{
-    return SdBaseFile::write(&b, 1);
-}
-#else
-void SdFile::write(uint8_t b)
-{
-    SdBaseFile::write(&b, 1);
-}
-#endif
+  //------------------------------------------------------------------------------
+  /** Write a byte to a file. Required by the Arduino Print class.
+   * \param[in] b the byte to be written.
+   * Use writeError to check for errors.
+   */
+  #if ARDUINO >= 100
+size_t SdFile::write(uint8_t b) { return SdBaseFile::write(&b, 1); }
+  #else
+void SdFile::write(uint8_t b) { SdBaseFile::write(&b, 1); }
+  #endif
 //------------------------------------------------------------------------------
 /** Write a string to a file. Used by the Arduino Print class.
  * \param[in] str Pointer to the string.
  * Use writeError to check for errors.
  */
-void SdFile::write(const char* str) {
-  SdBaseFile::write(str, strlen(str));
-}
+void SdFile::write(const char* str) { SdBaseFile::write(str, strlen(str)); }
 //------------------------------------------------------------------------------
 /** Write a PROGMEM string to a file.
  * \param[in] str Pointer to the PROGMEM string.
@@ -90,6 +81,5 @@ void SdFile::writeln_P(PGM_P str) {
   write_P(str);
   write_P(PSTR("\r\n"));
 }
-
 
 #endif

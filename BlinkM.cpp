@@ -5,19 +5,18 @@
 #include "Marlin.h"
 #ifdef BLINKM
 
-#if (ARDUINO >= 100)
-  # include "Arduino.h"
-#else
-  # include "WProgram.h"
-#endif
+  #if (ARDUINO >= 100)
+    #include "Arduino.h"
+  #else
+    #include "WProgram.h"
+  #endif
 
-#include "BlinkM.h"
+  #include "BlinkM.h"
 
-void SendColors(byte red, byte grn, byte blu)
-{
-  Wire.begin(); 
+void SendColors(byte red, byte grn, byte blu) {
+  Wire.begin();
   Wire.beginTransmission(0x09);
-  Wire.write('o');                    //to disable ongoing script, only needs to be used once
+  Wire.write('o');  // to disable ongoing script, only needs to be used once
   Wire.write('n');
   Wire.write(red);
   Wire.write(grn);
@@ -25,5 +24,4 @@ void SendColors(byte red, byte grn, byte blu)
   Wire.endTransmission();
 }
 
-#endif //BLINKM
-
+#endif  // BLINKM
